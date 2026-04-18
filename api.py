@@ -38,7 +38,7 @@ def scan_package(package_name: str):
     code_risks = scan_code_for_malware(demo_code)
 
     score, level, reasons = calculate_risk(
-``        typo_risks, metadata_risks, code_risks
+               typo_risks, metadata_risks, code_risks
     )
 
     return {
