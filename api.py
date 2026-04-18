@@ -4,8 +4,17 @@ from engines.metadata_engine import analyze_metadata
 from engines.code_scanner import scan_code_for_malware
 from engines.risk_engine import calculate_risk
 from utils.package_fetcher import fetch_pypi_package
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="SafeSupply AI API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow all websites
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def home():
@@ -29,7 +38,7 @@ def scan_package(package_name: str):
     code_risks = scan_code_for_malware(demo_code)
 
     score, level, reasons = calculate_risk(
-        typo_risks, metadata_risks, code_risks
+``        typo_risks, metadata_risks, code_risks
     )
 
     return {
@@ -38,4 +47,3 @@ def scan_package(package_name: str):
         "risk_level": level,
         "reasons": reasons
     }
-
