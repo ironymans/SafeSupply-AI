@@ -8,6 +8,8 @@ from engines.risk_engine import calculate_risk
 from engines.cve_engine import check_cve   # ⭐ NEW ENGINE
 from utils.package_fetcher import fetch_pypi_package
 from engines.github_engine import check_github_repo
+from engines.bulk_scanner import scan_multiple_packages
+from fastapi import Body
 
 app = FastAPI(title="SafeSupply AI API")
 
@@ -81,4 +83,19 @@ def scan_package(package_name: str):
         "risk_score": score,
         "risk_level": level,
         "reasons": reasons
+    }
+@app.post("/scan-file")
+def scan_requirements(file_text: str = Body(...)):
+
+    packages = file_text.split("\n")
+    results = scan_multiple_packages(packages)
+
+    high_risk = sum(1 for r in results if r["risk_score"] >= 70)
+    medium_risk = sum(1 for r in results if 40 <= r["risk_score"] < 70)
+
+    return {
+        "total_packages": len(results),
+        "high_risk_packages": high_risk,
+        "medium_risk_packages": medium_risk,
+        "results": results
     }
